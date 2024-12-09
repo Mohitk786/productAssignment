@@ -2,7 +2,7 @@ import { Product } from "@/types/types";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import toast from "react-hot-toast";
 
-// Cart state interface
+
 interface CartState {
   items: Product[];
 }
@@ -11,7 +11,7 @@ interface CartState {
 const initialState: CartState = {
   items: typeof window !== "undefined" && localStorage.getItem("cartItems")
     ? JSON.parse(localStorage.getItem("cartItems") as string)
-    : [], // Load from localStorage if available, otherwise default to empty array
+    : [], 
 };
 
 const cartSlice = createSlice({
@@ -19,7 +19,7 @@ const cartSlice = createSlice({
   initialState,
   reducers: {
     addToCart: (state, action: PayloadAction<Product>) => {
-      // Check if the product already exists in the cart
+
       const productExists = state.items.some(item => item.id === action.payload.id);
       
       if (productExists) {
@@ -29,6 +29,7 @@ const cartSlice = createSlice({
 
       // Add the product to the cart
       state.items.push(action.payload);
+      toast.success("Item Added To Cart");
 
       // Update localStorage after adding the item
       if (typeof window !== "undefined") {
@@ -37,10 +38,8 @@ const cartSlice = createSlice({
     },
 
     removeFromCart: (state, action: PayloadAction<number>) => {
-      // Remove the product from the cart based on its id
       state.items = state.items.filter(item => item.id !== action.payload);
       
-      // Update localStorage after removing the item
       if (typeof window !== "undefined") {
         localStorage.setItem("cartItems", JSON.stringify(state.items));
       }

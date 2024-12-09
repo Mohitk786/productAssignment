@@ -4,21 +4,18 @@ import { useDispatch, useSelector } from "react-redux";
 import { Product } from "@/types/types";
 import { RootState } from "@/store/store";
 
-// Define the prop type for Item component
+
 export interface ItemProps {
   product: Product;
 }
 
 const Item = ({ product }: ItemProps) => {
-  // Define the selector with the proper RootState type
   const { items } = useSelector((state: RootState) => state.cart);
 
-  // Dispatch type should be automatically inferred, but you can define it explicitly
   const dispatch = useDispatch();
 
   const handleAddItem = () => {
     dispatch(addToCart(product));
-    toast.success("Item Added To Cart");
   };
 
   const handleRemoveItem = () => {

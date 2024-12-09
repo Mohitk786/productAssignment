@@ -1,22 +1,23 @@
 "use client"
 
-// InteractiveVideoPlayer.tsx
 import React, { useState } from "react";
 import ReactPlayer from "react-player";
-import { toast } from "react-hot-toast";
-import { useDispatch } from "react-redux";
-import { addToCart } from "@/store/cartSlice"; // Assuming you're using Redux for cart management
+import { useDispatch, useSelector } from "react-redux";
+import { addToCart, removeFromCart } from "@/store/cartSlice"; 
 import { Product } from "@/types/types";
 import Image from "next/image";
+import toast from "react-hot-toast";
+import { RootState } from "@/store/store";
 
 interface InteractiveVideoPlayerProps {
   videoUrl: string;
-  products: Product[];
+  products:Product[]
 }
 
-const InteractiveVideoPlayer = ({ videoUrl, products }: InteractiveVideoPlayerProps) => {
+const InteractiveVideoPlayer = ({ videoUrl, products}: InteractiveVideoPlayerProps) => {
   const [showOffer, setShowOffer] = useState(false);
-  const [offerDetails, setOfferDetails] = useState<Product | null>(null); // To hold offer details
+  const [offerDetails, setOfferDetails] = useState<Product | null>(null); 
+  const {items} = useSelector((state:RootState)=>state.cart)
   const dispatch = useDispatch();
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -37,13 +38,17 @@ const InteractiveVideoPlayer = ({ videoUrl, products }: InteractiveVideoPlayerPr
     }
   };
 
-  const handleOfferClick = (productId: number) => {
-    // You can dispatch the product to the cart
+  const handleAddItem = (productId: number) => {
+   
     const product = products.find((prod) => prod.id === productId);
     if (product) {
       dispatch(addToCart(product));
-      toast.success("Item Added To Cart");
     }
+  };
+
+  const handleRemoveItem = () => {
+    dispatch(removeFromCart(14));  //hard coded because to offer product is also same 
+    toast.error("Item Removed From Cart");
   };
 
   return (
@@ -69,12 +74,24 @@ const InteractiveVideoPlayer = ({ videoUrl, products }: InteractiveVideoPlayerPr
           />
           <h2 className="text-xl font-semibold mb-2">{offerDetails.title}</h2>
           <p className="text-sm mb-4">{offerDetails.description}</p>
-          <button
-            onClick={() => handleOfferClick(offerDetails.id)}
-            className="bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded-full w-full transition duration-300"
-          >
-            Add to Cart
-          </button>
+          
+          {
+            items.some((p) => p.id === offerDetails.id) ? (
+              <button
+                className="border-2 border-gray-700 text-gray-700 uppercase font-semibold px-3 py-1 rounded-full text-[12px] transition-all duration-300 ease-in hover:text-white hover:bg-gray-700"
+                onClick={handleRemoveItem}
+              >
+                Remove Item
+              </button>
+            ) : (
+              <button
+                className="border-2 border-gray-700 text-gray-700 uppercase font-semibold px-3 py-1 rounded-full text-[12px] transition-all duration-300 ease-in hover:text-white hover:bg-gray-700"
+                onClick={()=>handleAddItem(offerDetails.id)}
+              >
+                Add to Cart
+              </button>
+            )
+          }
         </div>
       )}
     </div>
